@@ -34,6 +34,7 @@ namespace Anivia
         public static void Game_OnGameLoad(EventArgs args)
         {
             if (Player.BaseSkinName != "Anivia") return;
+            Menu();
 
             Q = new Spell(SpellSlot.Q, 1100f);
             //W = new Spell(SpellSlot.W, 1000f);
@@ -50,49 +51,6 @@ namespace Anivia
             SpellList.Add(R);
 
             //Ignite = Player.GetSpellSlot("summonordot");
-
-            myMenu = new Menu("Articuno", "Artc", true);
-
-            //var TSMenu = new Menu("Target Selector", "Target Selector");
-            //TargetSelector.AddToMenu(TSMenu);
-            //myMenu.AddSubMenu(TSMenu);
-
-            //myMenu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            //var Orbwalker = new Orbwalking.Orbwalker(myMenu.SubMenu("Orbwalking"));
-
-            myMenu.AddSubMenu(new Menu("Combo", "Combo"));
-            //myMenu.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "Use Q").SetValue(true));
-            //myMenu.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
-            //myMenu.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
-            //myMenu.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
-            //myMenu.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
-
-            //myMenu.AddSubMenu(new Menu("Harass", "Harass"));
-            //myMenu.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "Use Q").SetValue(true));
-            //myMenu.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "Use E").SetValue(true));
-            //myMenu.SubMenu("Harass").AddItem(new MenuItem("UseRHarass", "Use R").SetValue(true));
-            //myMenu.SubMenu("Harass").AddItem(new MenuItem("ManaHarass", "Harass if mana >").SetValue(new Slider(0)));
-
-            //myMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
-            //myMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseQLC", "Use Q").SetValue(true));
-            //myMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseRLC", "Use R").SetValue(false));
-            //myMenu.SubMenu("LaneClear").AddItem(new MenuItem("ManaLC", "Harass if mana >").SetValue(new Slider(0)));
-
-            //myMenu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
-            //myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseQJC", "Use Q").SetValue(true));
-            //myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseEJC", "Use E").SetValue(true));
-            //myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseRJC", "Use R").SetValue(true));
-            //myMenu.SubMenu("JungleClear").AddItem(new MenuItem("ManaJC", "Harass if mana >").SetValue(new Slider(0)));
-
-            //myMenu.AddSubMenu(new Menu("Misc", "Misc"));
-            //myMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "Use PacketCast").SetValue(true));
-            //myMenu.SubMenu("Misc").AddItem(new MenuItem("AutoE", "Auto use E when enemy is chilled").SetValue(true));
-
-            //myMenu.AddSubMenu(new Menu("Drawings", "Drawings"));
-            //myMenu.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
-            //myMenu.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
-            //myMenu.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
-            //myMenu.SubMenu("Drawings").AddItem(new MenuItem("RRange", "R Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
 
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
@@ -225,7 +183,7 @@ namespace Anivia
                 R.CastIfHitchanceEquals(target, HitChance.Low, false);
             }
         }
-        public static void Menu()
+        private static void Menu()
         {
             myMenu = new Menu("Articuno", "Articuno", true);
 
@@ -269,6 +227,8 @@ namespace Anivia
             //myMenu.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
             //myMenu.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
             //myMenu.SubMenu("Drawings").AddItem(new MenuItem("RRange", "R Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
+
+            myMenu.AddToMainMenu();
         }
         private static void drawRanges()
         {

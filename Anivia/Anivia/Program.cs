@@ -37,13 +37,13 @@ namespace Anivia
             if (Player.BaseSkinName != "Anivia") return;
             Menu();
 
-            Q = new Spell(SpellSlot.Q, 1100f);
+            Q = new Spell(SpellSlot.Q, 1050f);
             //W = new Spell(SpellSlot.W, 1000f);
             E = new Spell(SpellSlot.E, 650f);
             R = new Spell(SpellSlot.R, 625f);
 
             Q.SetSkillshot(.5f, 110f, 850f, false, SkillshotType.SkillshotLine);
-            &&R.SetSkillshot(.25f, )
+            R.SetSkillshot(.25f, 400f, float.MaxValue, false, SkillshotType.SkillshotCircle);
 
             SpellList.Add(Q);
             //SpellList.Add(W);
@@ -56,14 +56,8 @@ namespace Anivia
             Drawing.OnDraw += Drawing_OnDraw;
             GameObject.OnCreate += OnCreate;
             GameObject.OnDelete += OnDelete;
-            Game.PrintChat("Bzzzzzz123t");
-            Game.PrintChat("Q Delay" + Q.Instance.SData.SpellCastTime);
-            Game.PrintChat("Q Range" + Q.Range);
-            Game.PrintChat("Q Width" + Q.Instance.SData.LineWidth);
-            Game.PrintChat("Q Speed" + Q.Instance.SData.MissileSpeed);
-            Game.PrintChat("R Delay" + R.Instance.SData.SpellCastTime);
-            Game.PrintChat("R Width" + R.Instance.SData.LineWidth);
-            Game.PrintChat("R Speed" + R.Instance.SData.MissileSpeed);
+            Game.PrintChat("Bzzzzzzt");
+
 
         }
 
@@ -88,7 +82,7 @@ namespace Anivia
 
             if (myMenu.Item("AutoE").GetValue<bool>())
             {
-                if (target.HasBuff("chilled"))
+                if (target.HasBuff("Chilled"))
                 {
                     castE(target);
                 }
@@ -124,7 +118,8 @@ namespace Anivia
             var useE = myMenu.Item("UseECombo").GetValue<bool>();
 
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-            if (target == null) return;
+            if (target == null || (Player.Mana / Player.MaxMana) * 100 > myMenu.Item("ManaHarass").GetValue<int>()) 
+                return;
 
             if (useQ) castQ(target);
             if (useE) castE(target);
@@ -165,7 +160,7 @@ namespace Anivia
         {
             if (unit.IsValidTarget(E.Range) && E.IsReady() && myMenu.Item("UseECombo").GetValue<bool>())
             {
-                E.Cast(unit);
+                E.CastOnUnit(target);
             }
         }
 
@@ -179,11 +174,11 @@ namespace Anivia
 
         private static void OnCreate(GameObject sender, EventArgs args)
         {
-            if (sender.Name.Contains("FlashFrost_mis"))
+            if (sender.Name.Contains("flashfrost"))
             {
                 qObj = sender;
             }
-            if (sender.Name.Contains("cryo_storm"))
+            if (sender.Name.Contains("cryo"))
             {
                 rObj = sender;
             }
@@ -229,13 +224,13 @@ namespace Anivia
             myMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
             myMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseQLC", "Use Q").SetValue(true));
             myMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseRLC", "Use R").SetValue(false));
-            myMenu.SubMenu("LaneClear").AddItem(new MenuItem("ManaLC", "Harass if mana >").SetValue(new Slider(0)));
+            myMenu.SubMenu("LaneClear").AddItem(new MenuItem("ManaLC", "Clear if mana >").SetValue(new Slider(0)));
 
             myMenu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
             myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseQJC", "Use Q").SetValue(true));
             myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseEJC", "Use E").SetValue(true));
             myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseRJC", "Use R").SetValue(true));
-            myMenu.SubMenu("JungleClear").AddItem(new MenuItem("ManaJC", "Harass if mana >").SetValue(new Slider(0)));
+            myMenu.SubMenu("JungleClear").AddItem(new MenuItem("ManaJC", "Clear if mana >").SetValue(new Slider(0)));
 
             myMenu.AddSubMenu(new Menu("Misc", "Misc"));
             myMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "Use PacketCast").SetValue(true));

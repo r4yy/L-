@@ -42,8 +42,8 @@ namespace Anivia
             E = new Spell(SpellSlot.E, 650f);
             R = new Spell(SpellSlot.R, 625f);
 
-            //Q.SetSkillshot(Q.Instance.SData.SpellCastTime, Q.Instance.SData.LineWidth, Q.Instance.SData.MissileSpeed, false, SkillshotType.SkillshotLine);
-           // R.SetSkillshot(R.Instance.SData.SpellCastTime, R.Instance.SData.CastRadius, float.MaxValue, false, SkillshotType.SkillshotCircle);
+            Q.SetSkillshot(.5f, 110f, 850f, false, SkillshotType.SkillshotLine);
+            &&R.SetSkillshot(.25f, )
 
             SpellList.Add(Q);
             //SpellList.Add(W);
@@ -56,12 +56,13 @@ namespace Anivia
             Drawing.OnDraw += Drawing_OnDraw;
             GameObject.OnCreate += OnCreate;
             GameObject.OnDelete += OnDelete;
-            Game.PrintChat("Bzzzzzzt");
+            Game.PrintChat("Bzzzzzz123t");
             Game.PrintChat("Q Delay" + Q.Instance.SData.SpellCastTime);
+            Game.PrintChat("Q Range" + Q.Range);
             Game.PrintChat("Q Width" + Q.Instance.SData.LineWidth);
             Game.PrintChat("Q Speed" + Q.Instance.SData.MissileSpeed);
             Game.PrintChat("R Delay" + R.Instance.SData.SpellCastTime);
-            Game.PrintChat("R Width" + R.Instance.SData.CastRadius);
+            Game.PrintChat("R Width" + R.Instance.SData.LineWidth);
             Game.PrintChat("R Speed" + R.Instance.SData.MissileSpeed);
 
         }

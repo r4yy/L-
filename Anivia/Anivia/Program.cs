@@ -42,9 +42,8 @@ namespace Anivia
             E = new Spell(SpellSlot.E, 650f);
             R = new Spell(SpellSlot.R, 625f);
 
-            Q.SetSkillshot(0.25f, 110f, 850f, false, SkillshotType.SkillshotLine);
-            E.SetTargetted(0.25f, 1200f);
-            R.SetSkillshot(0.25f, 400f, float.MaxValue, false, SkillshotType.SkillshotCircle);
+            //Q.SetSkillshot(Q.Instance.SData.SpellCastTime, Q.Instance.SData.LineWidth, Q.Instance.SData.MissileSpeed, false, SkillshotType.SkillshotLine);
+           // R.SetSkillshot(R.Instance.SData.SpellCastTime, R.Instance.SData.CastRadius, float.MaxValue, false, SkillshotType.SkillshotCircle);
 
             SpellList.Add(Q);
             //SpellList.Add(W);
@@ -58,11 +57,19 @@ namespace Anivia
             GameObject.OnCreate += OnCreate;
             GameObject.OnDelete += OnDelete;
             Game.PrintChat("Bzzzzzzt");
+            Game.PrintChat("Q Delay" + Q.Instance.SData.SpellCastTime);
+            Game.PrintChat("Q Width" + Q.Instance.SData.LineWidth);
+            Game.PrintChat("Q Speed" + Q.Instance.SData.MissileSpeed);
+            Game.PrintChat("R Delay" + R.Instance.SData.SpellCastTime);
+            Game.PrintChat("R Width" + R.Instance.SData.CastRadius);
+            Game.PrintChat("R Speed" + R.Instance.SData.MissileSpeed);
+
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (Player.IsDead) return;
+            var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
 
             switch (Orbwalker.ActiveMode)
             {
@@ -94,20 +101,20 @@ namespace Anivia
 
         private static void Combo()
         {
+            detonateQ();
+            TurnOffR();
+
             var useQ = myMenu.Item("UseECombo").GetValue<bool>();
             //var useW = myMenu.Item("UseECombo").GetValue<bool>();
             var useE = myMenu.Item("UseECombo").GetValue<bool>();
             var useR = myMenu.Item("UseECombo").GetValue<bool>();
 
-            var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
             if (target == null) return;
 
             if (useR) castR(target);
             if (useQ) castQ(target);
             if (useE) castE(target);
-
-            detonateQ();
-            TurnOffR();
         }
 
         private static void Harass()
@@ -115,7 +122,7 @@ namespace Anivia
             var useQ = myMenu.Item("UseECombo").GetValue<bool>();
             var useE = myMenu.Item("UseECombo").GetValue<bool>();
 
-            var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             if (target == null) return;
 
             if (useQ) castQ(target);
@@ -136,7 +143,7 @@ namespace Anivia
         }
         private static void detonateQ()
         {
-            if (qObj != null && Player.Position.Distance(qObj.Position) < 1300)
+            if (qObj != null && Player.ServerPosition.Distance(qObj.Position) < 1300)
             {
                 if (Q.Width > qObj.Position.Distance(target.Position))
                 {

@@ -21,7 +21,8 @@ namespace Anivia
 
         private static List<Spell> SpellList = new List<Spell>();
         private static Spell Q, W, E, R;
-        //private static SpellSlot Ignite;
+        private static SpellSlot Ignite;
+        private static bool hasIgnite;
         private static GameObject qObj, rObj;
 
         //private static bool packetCast;
@@ -50,7 +51,7 @@ namespace Anivia
             SpellList.Add(E);
             SpellList.Add(R);
 
-            //Ignite = Player.GetSpellSlot("summonordot");
+            Ignite = Player.GetSpellSlot("summonordot");
 
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
@@ -59,8 +60,29 @@ namespace Anivia
             Game.PrintChat("Bzzzzzzt");
         }
 
+        private static void Game_OnGameUpdate(EventArgs args)
+        {
+            if (Player.IsDead) return;
+            Obj_AI_Hero target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
+            if (myMenu.Item("comboMode").GetValue<KeyBind>().Active)
+            {
+                Combo();
+            }
 
+            if (myMenu.Item("harassMode").GetValue<KeyBind>().Active)
+            {
+                Harass();
+            }
+
+            if (myMenu.Item("AutoE").GetValue<bool>())
+            {
+                if (target.HasBuff("chilled"))
+                {
+                    castE(target);
+                }
+            }
+        }
         private static void OnCreate(GameObject sender, EventArgs args)
         {
             if (sender.Name.Contains("FlashFrost_mis"))
@@ -91,29 +113,7 @@ namespace Anivia
             drawRanges();
         }
 
-        private static void Game_OnGameUpdate(EventArgs args)
-        {
-            if (Player.IsDead) return;
-            Obj_AI_Hero target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
-            if (myMenu.Item("comboMode").GetValue<KeyBind>().Active)
-            {
-                Combo();
-            }
-
-            if (myMenu.Item("harassMode").GetValue<KeyBind>().Active)
-            {
-                Harass();
-            }
-
-            if (myMenu.Item("UseEOnlyChilled").GetValue<bool>())
-            {
-                if (target.HasBuff("chilled"))
-                {
-                    castE(target);
-                }
-            }
-        }
 
         private static void Combo()
         {
@@ -200,23 +200,27 @@ namespace Anivia
             myMenu.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
             myMenu.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
             myMenu.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
+            myMenu.SubMenu("Combo").AddItem(new MenuItem("comboMode", "Combo Key").SetValue(new KeyBind('C', KeyBindType.Press))); ;
 
             myMenu.AddSubMenu(new Menu("Harass", "Harass"));
             myMenu.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "Use Q").SetValue(true));
             myMenu.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "Use E").SetValue(true));
             myMenu.SubMenu("Harass").AddItem(new MenuItem("UseRHarass", "Use R").SetValue(true));
             myMenu.SubMenu("Harass").AddItem(new MenuItem("ManaHarass", "Harass if mana >").SetValue(new Slider(0)));
+            myMenu.SubMenu("Harass").AddItem(new MenuItem("harassMode", "Harass Key").SetValue(new KeyBind('X', KeyBindType.Press))); ;
 
             myMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
             myMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseQLC", "Use Q").SetValue(true));
             myMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseRLC", "Use R").SetValue(false));
             myMenu.SubMenu("LaneClear").AddItem(new MenuItem("ManaLC", "Harass if mana >").SetValue(new Slider(0)));
+            myMenu.SubMenu("LaneClear").AddItem(new MenuItem("LCMode", "LC Key").SetValue(new KeyBind('T', KeyBindType.Press))); ;
 
             myMenu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
             myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseQJC", "Use Q").SetValue(true));
             myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseEJC", "Use E").SetValue(true));
             myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseRJC", "Use R").SetValue(true));
             myMenu.SubMenu("JungleClear").AddItem(new MenuItem("ManaJC", "Harass if mana >").SetValue(new Slider(0)));
+            myMenu.SubMenu("JungleClear").AddItem(new MenuItem("JGMode", "JC Key").SetValue(new KeyBind('T', KeyBindType.Press))); ;
 
             myMenu.AddSubMenu(new Menu("Misc", "Misc"));
             myMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "Use PacketCast").SetValue(true));

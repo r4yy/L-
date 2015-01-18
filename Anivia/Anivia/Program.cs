@@ -1,70 +1,125 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
-
+using Color = System.Drawing.Color;
 
 namespace Anivia
 {
     class Program
     {
-        private static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
-        private static Obj_AI_Hero target { get { return ObjectManager.Player; } }
+        public static Obj_AI_Hero Player
+        {
+            get { return ObjectManager.Player; }
+        }
 
-        private static Menu myMenu;
-        private static Orbwalking.Orbwalker Orbwalker;
+        //public static Obj_AI_Hero Target
+        //{
+        //    get { return ObjectManager.Player; }
+        //}
 
-        private static List<Spell> SpellList = new List<Spell>();
-        private static Spell Q, W, E, R;
-        private static SpellSlot Ignite;
-        private static bool hasIgnite;
-        private static GameObject qObj, rObj;
+        public static Spell Q, W, E, R;
+        public static Orbwalking.Orbwalker Orbwalker;
+        public static SpellSlot IgniteSlot;
+        public static GameObject QGameObject, RGameObject;
+        public static Menu MyMenu;
 
-        //private static bool packetCast;
-
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
-        public static void Game_OnGameLoad(EventArgs args)
+        private static void Game_OnGameLoad(EventArgs args)
         {
-            if (Player.BaseSkinName != "Anivia") return;
-            Menu();
+            if (Player.ChampionName != "Anivia")
+                return;
 
-            Q = new Spell(SpellSlot.Q, 1050f);
+            IgniteSlot = Player.GetSpellSlot("summonordot");
+
+            #region SpellInfos
+
+            Q = new Spell(SpellSlot.Q, 1100f);
+            Q.SetSkillshot(0.25f, 110f, 850f, false, SkillshotType.SkillshotLine);
+
             //W = new Spell(SpellSlot.W, 1000f);
+            //W.SetSkillshot(W.Instance.SData.SpellCastTime, W.Instance.SData.LineWidth, W.Instance.SData.MissileSpeed, false, SkillshotType.SkillshotLine);
+
             E = new Spell(SpellSlot.E, 650f);
+            E.SetTargetted(E.Instance.SData.SpellCastTime, E.Instance.SData.MissileSpeed);
+
             R = new Spell(SpellSlot.R, 625f);
+            R.SetSkillshot(0.25f, 200, float.MaxValue, false, SkillshotType.SkillshotCircle);
 
-            Q.SetSkillshot(.5f, 110f, 850f, false, SkillshotType.SkillshotLine);
-            R.SetSkillshot(.25f, 400f, float.MaxValue, false, SkillshotType.SkillshotCircle);
+            #endregion
 
-            SpellList.Add(Q);
-            //SpellList.Add(W);
-            SpellList.Add(E);
-            SpellList.Add(R);
+            #region Menu
 
-            Ignite = Player.GetSpellSlot("summonordot");
+            MyMenu = new Menu("Articuno - The icing bird", "Anivia", true);
+
+            var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
+            TargetSelector.AddToMenu(targetSelectorMenu);
+            MyMenu.AddSubMenu(targetSelectorMenu);
+
+            MyMenu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
+            Orbwalker = new Orbwalking.Orbwalker(MyMenu.SubMenu("Orbwalking"));
+
+            MyMenu.AddSubMenu(new Menu("Combo", "Combo"));
+            MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "Use Q").SetValue(true));
+            //MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
+            MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
+            MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
+            MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
+
+            MyMenu.AddSubMenu(new Menu("Harass", "Harass"));
+            MyMenu.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "Use Q").SetValue(true));
+            MyMenu.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "Use E").SetValue(true));
+            MyMenu.SubMenu("Harass").AddItem(new MenuItem("ManaHarass", "Harass if mana >").SetValue(new Slider(0)));
+
+            MyMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
+            MyMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseQLC", "Use Q").SetValue(true));
+            MyMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseRLC", "Use R").SetValue(false));
+            MyMenu.SubMenu("LaneClear").AddItem(new MenuItem("ManaLC", "Clear if mana >").SetValue(new Slider(0)));
+
+            MyMenu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
+            MyMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseQJC", "Use Q").SetValue(true));
+            MyMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseEJC", "Use E").SetValue(true));
+            MyMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseRJC", "Use R").SetValue(true));
+            MyMenu.SubMenu("JungleClear").AddItem(new MenuItem("ManaJC", "Clear if mana >").SetValue(new Slider(0)));
+
+            MyMenu.AddSubMenu(new Menu("Misc", "Misc"));
+            MyMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "Use PacketCast").SetValue(true));
+            MyMenu.SubMenu("Misc").AddItem(new MenuItem("AutoE", "Auto use E when enemy is chilled").SetValue(true));
+
+            MyMenu.AddSubMenu(new Menu("Drawings", "Drawings"));
+            MyMenu.SubMenu("Drawings")
+                .AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(false, Color.Black, Q.Range)));
+            //MyMenu.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
+            MyMenu.SubMenu("Drawings")
+                .AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(false, Color.Cyan)));
+            MyMenu.SubMenu("Drawings")
+                .AddItem(new MenuItem("RRange", "R Range").SetValue(new Circle(false, Color.Cyan)));
+
+            MyMenu.AddToMainMenu();
+
+            #endregion
 
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            GameObject.OnCreate += OnCreate;
-            GameObject.OnDelete += OnDelete;
-            Game.PrintChat("Bzzzzzzt");
-
-
+            GameObject.OnCreate += GameObject_OnCreate;
+            GameObject.OnDelete += GameObject_OnDelete;
+            //Interrupter.OnPossibleToInterrupt += Interrupter_OnPossibleToInterrupt;
+            //AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Game.PrintChat("Anivia by r4yy - Successfully loaded!");
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            if (Player.IsDead) return;
-            var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
+            if (Player.IsDead)
+                return;
+
+            DetonateQ();
+            StopR();
 
             switch (Orbwalker.ActiveMode)
             {
@@ -74,179 +129,140 @@ namespace Anivia
                 case Orbwalking.OrbwalkingMode.Mixed:
                     Harass();
                     break;
-                //case Orbwalking.OrbwalkingMode.LaneClear:
-                //    LC();
-                //    JC();
-                //    break;
+                    //case Orbwalking.OrbwalkingMode.LaneClear:
+                    //    LC();
+                    //    JC();
+                    //    break;
+                case Orbwalking.OrbwalkingMode.None:
+                    break;
+            }
+        }
+
+        public static void Combo()
+        {
+            var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
+
+            if (target == null || target.IsInvulnerable)
+                return;
+            var useQ = MyMenu.Item("ComboQ").GetValue<bool>() && Q.IsReady();
+            //var useW = MyMenu.Item("ComboW").GetValue<bool>() && W.IsReady();
+            var useE = MyMenu.Item("ComboE").GetValue<bool>() && E.IsReady();
+            var useR = MyMenu.Item("ComboR").GetValue<bool>() && R.IsReady();
+
+            if (useR)
+                CastR(target);
+            if (useQ)
+                CastQ(target);
+            if (useE)
+                CastE(target);
+        }
+        public static void Harass()
+        {
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+
+            if (target == null || (Player.Mana / Player.MaxMana) * 100 > MyMenu.Item("ManaHarass").GetValue<int>())
+                return;
+
+            var useQ = MyMenu.Item("HarassQ").GetValue<bool>() && Q.IsReady();
+            var useE = MyMenu.Item("HarassE").GetValue<bool>() && E.IsReady();
+
+            if (useQ)
+                CastQ(target);
+            if (useE)
+                CastE(target);
+        }
+
+        private static void CastQ(Obj_AI_Hero unit)
+        {
+            if (unit.IsValidTarget(Q.Range) && Q.IsReady() && QGameObject == null &&
+                MyMenu.Item("UseQCombo").GetValue<bool>())
+            {
+                Q.CastIfHitchanceEquals(unit, HitChance.High, true);
+            }
+        }
+        private static void CastE(Obj_AI_Hero unit)
+        {
+            if (unit.IsValidTarget(E.Range) && E.IsReady() && MyMenu.Item("UseECombo").GetValue<bool>())
+            {
+                E.CastOnUnit(unit, true);
+            }
+        }
+        private static void CastR(Obj_AI_Hero unit)
+        {
+            if (unit.IsValidTarget(R.Range) && R.IsReady() && MyMenu.Item("UseRCombo").GetValue<bool>())
+            {
+                R.Cast(unit, true, true);
+            }
+        }
+
+        private static void DetonateQ()
+        {
+            var enemies = ObjectManager.Get<Obj_AI_Base>().FindAll(enem => enem.IsValidTarget());
+
+            foreach (var enem in enemies)
+            {
+                if (QGameObject != null && QGameObject.Position.Distance(enem) < 150)
+                    {
+                        Q.Cast();
+                    }
+            }
+        }
+        private static void StopR()
+        {
+            if (RGameObject != null && RGameObject.Position.Distance(Target.ServerPosition) < 400)
+            {
+                R.Cast();
+            }
+        }
+
+        private static void GameObject_OnCreate(GameObject sender, EventArgs args)
+        {
+            if (sender != null && sender.IsValid && sender.Name.Contains("FlashFrost_mis"))
+            {
+                QGameObject = sender;
             }
 
-            if (myMenu.Item("AutoE").GetValue<bool>())
+            if (sender != null && sender.IsValid && sender.Name.Contains("cryo_storm"))
             {
-                if (target.HasBuff("Chilled"))
-                {
-                    castE(target);
-                }
+                RGameObject = sender;
+            }
+        }
+        private static void GameObject_OnDelete(GameObject sender, EventArgs args)
+        {
+            if (sender != null && sender.IsValid && sender.Name.Contains("FlashFrost_mis"))
+            {
+                QGameObject = null;
+            }
+
+            if (sender != null && sender.IsValid && sender.Name.Contains("cryo_storm"))
+            {
+                RGameObject = null;
             }
         }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-            drawRanges();
-        }
-
-        private static void Combo()
-        {
-            detonateQ();
-            TurnOffR();
-
-            var useQ = myMenu.Item("UseECombo").GetValue<bool>();
-            //var useW = myMenu.Item("UseECombo").GetValue<bool>();
-            var useE = myMenu.Item("UseECombo").GetValue<bool>();
-            var useR = myMenu.Item("UseECombo").GetValue<bool>();
-
-            var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
-            if (target == null) return;
-
-            if (useR) castR(target);
-            if (useQ) castQ(target);
-            if (useE) castE(target);
-        }
-
-        private static void Harass()
-        {
-            var useQ = myMenu.Item("UseECombo").GetValue<bool>();
-            var useE = myMenu.Item("UseECombo").GetValue<bool>();
-
-            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-            if (target == null || (Player.Mana / Player.MaxMana) * 100 > myMenu.Item("ManaHarass").GetValue<int>()) 
+            if (Player.IsDead)
                 return;
 
-            if (useQ) castQ(target);
-            if (useE) castE(target);
+            var drawQ = MyMenu.Item("QRange").GetValue<bool>() && Q.IsReady();
+            var drawE = MyMenu.Item("ERange").GetValue<bool>() && E.IsReady();
+            var drawR = MyMenu.Item("RRange").GetValue<bool>() && R.IsReady();
 
-            detonateQ();
-        }
-
-        private static void TurnOffR()
-        {
-            if (rObj != null && Player.Position.Distance(rObj.Position) < R.Range)
+            if (drawQ)
             {
-                if (rObj.Position.Distance(target.Position) < 400)
-                {
-                    R.Cast();
-                }
-            }
-        }
-        private static void detonateQ()
-        {
-            if (qObj != null && Player.ServerPosition.Distance(qObj.Position) < 1300)
-            {
-                if (Q.Width > qObj.Position.Distance(target.Position))
-                {
-                    Q.Cast();
-                }
-            }
-        }
-
-        private static void castQ(Obj_AI_Hero unit)
-        {
-            if (unit.IsValidTarget(Q.Range) && Q.IsReady() && qObj == null && myMenu.Item("UseQCombo").GetValue<bool>())
-            {
-                Q.CastIfHitchanceEquals(unit, HitChance.Medium, false);
-            }
-        }
-
-        private static void castE(Obj_AI_Hero unit)
-        {
-            if (unit.IsValidTarget(E.Range) && E.IsReady() && myMenu.Item("UseECombo").GetValue<bool>())
-            {
-                E.CastOnUnit(target);
-            }
-        }
-
-        private static void castR(Obj_AI_Hero unit)
-        {
-            if (target.IsValidTarget(R.Range) && R.IsReady() && myMenu.Item("UseRCombo").GetValue<bool>())
-            {
-                R.CastIfHitchanceEquals(target, HitChance.Low, false);
-            }
-        }
-
-        private static void OnCreate(GameObject sender, EventArgs args)
-        {
-            if (sender.Name.Contains("flashfrost"))
-            {
-                qObj = sender;
-            }
-            if (sender.Name.Contains("cryo"))
-            {
-                rObj = sender;
+                Drawing.DrawCircle(Player.Position, Q.Range, Color.Black);
             }
 
-        }
-
-        private static void OnDelete(GameObject sender, EventArgs args)
-        {
-            if (sender.Name.Contains("FlashFrost_mis"))
+            if (drawE)
             {
-                qObj = null;
+                Drawing.DrawCircle(Player.Position, E.Range, Color.Cyan);
             }
-            if (sender.Name.Contains("cryo_storm"))
+
+            if (drawR)
             {
-                rObj = null;
+                Drawing.DrawCircle(Player.Position, R.Range, Color.Cyan);
             }
-        }
-
-        private static void Menu()
-        {
-            myMenu = new Menu("Articuno", "Articuno", true);
-
-            var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            TargetSelector.AddToMenu(targetSelectorMenu);
-            myMenu.AddSubMenu(targetSelectorMenu);
-
-            myMenu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            Orbwalker = new Orbwalking.Orbwalker(myMenu.SubMenu("Orbwalking"));
-
-            myMenu.AddSubMenu(new Menu("Combo", "Combo"));
-            myMenu.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "Use Q").SetValue(true));
-            //myMenu.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
-            myMenu.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
-            myMenu.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
-            myMenu.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
-
-            myMenu.AddSubMenu(new Menu("Harass", "Harass"));
-            myMenu.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "Use Q").SetValue(true));
-            myMenu.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "Use E").SetValue(true));
-            myMenu.SubMenu("Harass").AddItem(new MenuItem("UseRHarass", "Use R").SetValue(true));
-            myMenu.SubMenu("Harass").AddItem(new MenuItem("ManaHarass", "Harass if mana >").SetValue(new Slider(0)));
-
-            myMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
-            myMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseQLC", "Use Q").SetValue(true));
-            myMenu.SubMenu("LaneClear").AddItem(new MenuItem("UseRLC", "Use R").SetValue(false));
-            myMenu.SubMenu("LaneClear").AddItem(new MenuItem("ManaLC", "Clear if mana >").SetValue(new Slider(0)));
-
-            myMenu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
-            myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseQJC", "Use Q").SetValue(true));
-            myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseEJC", "Use E").SetValue(true));
-            myMenu.SubMenu("JungleClear").AddItem(new MenuItem("UseRJC", "Use R").SetValue(true));
-            myMenu.SubMenu("JungleClear").AddItem(new MenuItem("ManaJC", "Clear if mana >").SetValue(new Slider(0)));
-
-            myMenu.AddSubMenu(new Menu("Misc", "Misc"));
-            myMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "Use PacketCast").SetValue(true));
-            myMenu.SubMenu("Misc").AddItem(new MenuItem("AutoE", "Auto use E when enemy is chilled").SetValue(true));
-
-            myMenu.AddSubMenu(new Menu("Drawings", "Drawings"));
-            //myMenu.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
-            //myMenu.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
-            //myMenu.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
-            //myMenu.SubMenu("Drawings").AddItem(new MenuItem("RRange", "R Range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(35, 105, 105, 105))));
-
-            myMenu.AddToMainMenu();
-        }
-        private static void drawRanges()
-        {
-            throw new NotImplementedException();
         }
     }
 }

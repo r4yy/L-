@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -197,23 +196,21 @@ namespace Anivia
 
         private static void DetonateQ()
         {
-            var enemies = ObjectManager.Get<Obj_AI_Base>().FindAll(enem => enem.IsValidTarget());
+            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
 
-            foreach (var enem in enemies)
-            {
-                if (QGameObject != null && QGameObject.Position.Distance(enem) < 150)
-                    {
-                        Q.Cast();
-                    }
+            foreach (var enemy in enemies.Where(enemy => QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 150)) {
+                Q.Cast();
             }
         }
+
         private static void StopR()
         {
-            if (RGameObject != null && RGameObject.Position.Distance(Target.ServerPosition) < 400)
-            {
+            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
+
+            foreach (var enemy in enemies.Where(enemy => RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) < 400))
                 R.Cast();
-            }
         }
+
 
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
         {

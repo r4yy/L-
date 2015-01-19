@@ -143,6 +143,7 @@ namespace Anivia
 
             if (target == null || target.IsInvulnerable)
                 return;
+
             var useQ = MyMenu.Item("ComboQ").GetValue<bool>() && Q.IsReady();
             //var useW = MyMenu.Item("ComboW").GetValue<bool>() && W.IsReady();
             var useE = MyMenu.Item("ComboE").GetValue<bool>() && E.IsReady();
@@ -150,10 +151,10 @@ namespace Anivia
 
             if (useR)
                 CastR(target);
-            if (useQ)
-                CastQ(target);
             if (useE)
                 CastE(target);
+            if (useQ)
+                CastQ(target);
         }
         public static void Harass()
         {
@@ -173,22 +174,21 @@ namespace Anivia
 
         private static void CastQ(Obj_AI_Hero unit)
         {
-            if (unit.IsValidTarget(Q.Range) && Q.IsReady() && QGameObject == null &&
-                MyMenu.Item("UseQCombo").GetValue<bool>())
+            if (unit.IsValidTarget(Q.Range) && QGameObject == null) 
             {
                 Q.CastIfHitchanceEquals(unit, HitChance.High, true);
             }
         }
         private static void CastE(Obj_AI_Hero unit)
         {
-            if (unit.IsValidTarget(E.Range) && E.IsReady() && MyMenu.Item("UseECombo").GetValue<bool>())
+            if (unit.IsValidTarget(E.Range))
             {
                 E.CastOnUnit(unit, true);
             }
         }
         private static void CastR(Obj_AI_Hero unit)
         {
-            if (unit.IsValidTarget(R.Range) && R.IsReady() && MyMenu.Item("UseRCombo").GetValue<bool>())
+            if (unit.IsValidTarget(R.Range) && RGameObject == null)
             {
                 R.Cast(unit, true, true);
             }

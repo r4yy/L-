@@ -117,8 +117,8 @@ namespace Anivia
             if (Player.IsDead)
                 return;
 
-            DetonateQ();
-            StopR();
+            //DetonateQ();
+            //StopR();
 
             switch (Orbwalker.ActiveMode)
             {

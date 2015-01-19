@@ -141,20 +141,26 @@ namespace Anivia
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
 
-            if (target == null || target.IsInvulnerable)
-                return;
+            if (target == null || target.IsInvulnerable) return;
 
-            var useQ = MyMenu.Item("ComboQ").GetValue<bool>() && Q.IsReady();
-            //var useW = MyMenu.Item("ComboW").GetValue<bool>() && W.IsReady();
-            var useE = MyMenu.Item("ComboE").GetValue<bool>() && E.IsReady();
-            var useR = MyMenu.Item("ComboR").GetValue<bool>() && R.IsReady();
+            var useQ = MyMenu.Item("ComboQ").GetValue<bool>();
+            //var useW = MyMenu.Item("ComboW").GetValue<bool>();
+            var useE = MyMenu.Item("ComboE").GetValue<bool>();
+            var useR = MyMenu.Item("ComboR").GetValue<bool>();
 
-            if (useR)
+            if (useR && R.IsReady())
+            {
                 CastR(target);
-            if (useE)
+            }
+
+            if (useE && E.IsReady())
+            {
                 CastE(target);
-            if (useQ)
+            }
+            if (useQ && Q.IsReady())
+            {
                 CastQ(target);
+            }
         }
         public static void Harass()
         {

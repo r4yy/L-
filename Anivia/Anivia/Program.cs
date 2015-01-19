@@ -253,12 +253,12 @@ namespace Anivia
 
             if (drawE.Active && E.IsReady())
             {
-                Drawing.DrawCircle(Player.Position, E.Range, Color.Cyan);
+                Drawing.DrawCircle(Player.Position, E.Range, drawE.Color);
             }
 
             if (drawR.Active && R.IsReady())
             {
-                Drawing.DrawCircle(Player.Position, R.Range, Color.Cyan);
+                Drawing.DrawCircle(Player.Position, R.Range, drawR.Color);
             }
         }
     }

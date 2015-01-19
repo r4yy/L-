@@ -248,7 +248,7 @@ namespace Anivia
 
             if (drawQ.Active && Q.IsReady())
             {
-                Utility.DrawCircle(Player.Position, E.Range, drawQ.Color);
+                Utility.DrawCircle(Player.Position, Q.Range, drawQ.Color);
             }
 
             if (drawE.Active && E.IsReady())

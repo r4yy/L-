@@ -242,21 +242,21 @@ namespace Anivia
             if (Player.IsDead)
                 return;
 
-            var drawQ = MyMenu.Item("QRange").GetValue<bool>() && Q.IsReady();
-            var drawE = MyMenu.Item("ERange").GetValue<bool>() && E.IsReady();
-            var drawR = MyMenu.Item("RRange").GetValue<bool>() && R.IsReady();
+            var drawQ = MyMenu.Item("QRange").GetValue<Circle>();
+            var drawE = MyMenu.Item("ERange").GetValue<Circle>();
+            var drawR = MyMenu.Item("RRange").GetValue<Circle>();
 
-            if (drawQ)
+            if (drawQ.Active && Q.IsReady())
             {
-                Drawing.DrawCircle(Player.Position, Q.Range, Color.Black);
+                Utility.DrawCircle(Player.Position, E.Range, drawQ.Color);
             }
 
-            if (drawE)
+            if (drawE.Active && E.IsReady())
             {
                 Drawing.DrawCircle(Player.Position, E.Range, Color.Cyan);
             }
 
-            if (drawR)
+            if (drawR.Active && R.IsReady())
             {
                 Drawing.DrawCircle(Player.Position, R.Range, Color.Cyan);
             }

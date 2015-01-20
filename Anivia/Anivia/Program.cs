@@ -145,10 +145,10 @@ namespace Anivia
 
             if (target == null || target.IsInvulnerable) return;
             
-            var useQ = MyMenu.Item("ComboQ").GetValue<bool>();
-            //var useW = MyMenu.Item("ComboW").GetValue<bool>();
-            var useE = MyMenu.Item("ComboE").GetValue<bool>();
-            var useR = MyMenu.Item("ComboR").GetValue<bool>();
+            var useQ = MyMenu.Item("UseQCombo").GetValue<bool>();
+            //var useW = MyMenu.Item("UseWCombo").GetValue<bool>();
+            var useE = MyMenu.Item("UseECombo").GetValue<bool>();
+            var useR = MyMenu.Item("UseRCombo").GetValue<bool>();
 
             if (useR && R.IsReady())
             {

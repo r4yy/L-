@@ -139,7 +139,7 @@ namespace Anivia
 
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
             if (target == null || target.IsInvulnerable) return;
 

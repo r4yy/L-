@@ -137,7 +137,7 @@ namespace Anivia
             }
         }
 
-        private static void Combo()
+        public static void Combo()
         {
             Game.PrintChat("Now in Combo method");
             var target = TargetSelector.GetTarget(1100, TargetSelector.DamageType.Magical);

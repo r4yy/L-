@@ -123,7 +123,6 @@ namespace Anivia
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    Game.PrintChat("Orbwalker combo");
                     Combo();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
@@ -142,9 +141,10 @@ namespace Anivia
         {
             Game.PrintChat("Now in Combo method");
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            Game.PrintChat("Ziel: " + target);
 
             if (target == null || target.IsInvulnerable) return;
-            Game.PrintChat("Target is viable");
+            
             var useQ = MyMenu.Item("ComboQ").GetValue<bool>();
             //var useW = MyMenu.Item("ComboW").GetValue<bool>();
             var useE = MyMenu.Item("ComboE").GetValue<bool>();

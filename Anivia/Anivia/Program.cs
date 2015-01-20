@@ -140,7 +140,7 @@ namespace Anivia
         private static void Combo()
         {
             Game.PrintChat("Now in Combo method");
-            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(1100, TargetSelector.DamageType.Magical);
             Game.PrintChat("Ziel: " + target);
 
             if (target == null || target.IsInvulnerable) return;

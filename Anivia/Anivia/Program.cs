@@ -124,6 +124,7 @@ namespace Anivia
             {
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
+                    Game.PrintChat("Orbwalker combo");
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     Harass();
@@ -139,6 +140,7 @@ namespace Anivia
 
         private static void Combo()
         {
+            Game.PrintChat("Now in Combo method");
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
             if (target == null || target.IsInvulnerable) return;
@@ -159,6 +161,7 @@ namespace Anivia
             }
             if (useQ && Q.IsReady())
             {
+                Game.PrintChat("Q is ready to use");
                 CastQ(target);
             }
         }
@@ -182,6 +185,7 @@ namespace Anivia
         {
             if (unit.IsValidTarget(Q.Range) && QGameObject == null) 
             {
+                Game.PrintChat("Should cast Q now");
                 Q.CastIfHitchanceEquals(unit, HitChance.High, true);
             }
         }

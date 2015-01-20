@@ -185,7 +185,7 @@ namespace Anivia
                 Q.CastIfHitchanceEquals(unit, HitChance.High, true);
             }
         }
-        private static void CastE(Obj_AI_Hero unit)
+        private static void CastE(Obj_AI_Base unit)
         {
             if (unit.IsValidTarget(E.Range))
             {

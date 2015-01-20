@@ -140,9 +140,7 @@ namespace Anivia
         public static void Combo()
         {
             Game.PrintChat("Now in Combo method");
-            var target = TargetSelector.GetTarget(1100, TargetSelector.DamageType.Magical);
-            Game.PrintChat("Ziel: " + target);
-
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             if (target == null || target.IsInvulnerable) return;
             
             var useQ = MyMenu.Item("UseQCombo").GetValue<bool>();
@@ -159,10 +157,15 @@ namespace Anivia
             {
                 CastE(target);
             }
+
             if (useQ && Q.IsReady())
             {
                 Game.PrintChat("Q is ready to use");
                 CastQ(target);
+            }
+            else
+            {
+                Game.PrintChat("Q not ready to use");
             }
         }
         private static void Harass()

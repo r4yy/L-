@@ -137,7 +137,7 @@ namespace Anivia
             }
         }
 
-        public static void Combo()
+        private static void Combo()
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
 
@@ -162,7 +162,7 @@ namespace Anivia
                 CastQ(target);
             }
         }
-        public static void Harass()
+        private static void Harass()
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 

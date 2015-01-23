@@ -166,7 +166,7 @@ namespace Anivia
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
-            if (target == null || (Player.Mana / Player.MaxMana) * 100 > MyMenu.Item("ManaHarass").GetValue<int>())
+            if (target == null || (Player.Mana / Player.MaxMana) * 100 < MyMenu.Item("ManaHarass").GetValue<int>())
                 return;
 
             var useQ = MyMenu.Item("UseQHarass").GetValue<bool>() && Q.IsReady();

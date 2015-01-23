@@ -117,8 +117,8 @@ namespace Anivia
             if (Player.IsDead)
                 return;
 
-            //DetonateQ();
-            //StopR();
+            DetonateQ();
+            StopR();
 
             switch (Orbwalker.ActiveMode)
             {
@@ -139,7 +139,6 @@ namespace Anivia
 
         public static void Combo()
         {
-            Game.PrintChat("Now in Combo method");
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             if (target == null || target.IsInvulnerable) return;
             
@@ -160,12 +159,7 @@ namespace Anivia
 
             if (useQ && Q.IsReady())
             {
-                Game.PrintChat("Q is ready to use");
                 CastQ(target);
-            }
-            else
-            {
-                Game.PrintChat("Q not ready to use");
             }
         }
         private static void Harass()
@@ -175,8 +169,8 @@ namespace Anivia
             if (target == null || (Player.Mana / Player.MaxMana) * 100 > MyMenu.Item("ManaHarass").GetValue<int>())
                 return;
 
-            var useQ = MyMenu.Item("HarassQ").GetValue<bool>() && Q.IsReady();
-            var useE = MyMenu.Item("HarassE").GetValue<bool>() && E.IsReady();
+            var useQ = MyMenu.Item("UseQHarass").GetValue<bool>() && Q.IsReady();
+            var useE = MyMenu.Item("UseEHarass").GetValue<bool>() && E.IsReady();
 
             if (useQ)
                 CastQ(target);

@@ -80,7 +80,7 @@ namespace Anivia
 
             MyMenu.AddSubMenu(new Menu("Misc", "Misc"));
             MyMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "Use PacketCast").SetValue(true));
-            MyMenu.SubMenu("Misc").AddItem(new MenuItem("ChilledE", "Use E only if enemy is chilled").SetValue(true));
+            MyMenu.SubMenu("Misc").AddItem(new MenuItem("UseEChilled", "E only if chilled").SetValue(true));
             MyMenu.SubMenu("Misc").AddItem(new MenuItem("AutoIgnite", "Auto Ignite if killable").SetValue(true));
 
             MyMenu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -152,17 +152,16 @@ namespace Anivia
             if (target == null || target.IsInvulnerable) return;
             
             var useQ = MyMenu.Item("UseQCombo").GetValue<bool>();
-            //var useW = MyMenu.Item("UseWCombo").GetValue<bool>();
             var useE = MyMenu.Item("UseECombo").GetValue<bool>();
             var useR = MyMenu.Item("UseRCombo").GetValue<bool>();
-            var chilledE = MyMenu.Item("ChilledE").GetValue<bool>();
+            var useEChilled = MyMenu.Item("UseEChilled").GetValue<bool>();
 
             if (useR && R.IsReady())
             {
                 CastR(target);
             }
 
-            if (chilledE)
+            if (useEChilled)
             {
                 Game.PrintChat("Combo: Only use E if chilled");
                 if (target.HasBuff("Chilled", false, true) && useE && E.IsReady())
@@ -198,19 +197,17 @@ namespace Anivia
                 CastQ(target);
             }
 
-            if (chilledE)
-            {
-                Game.PrintChat("Harass: Only use E if chilled");
-                if (target.HasBuff("Chilled", false, true) && useE && E.IsReady())
-                {
-                    Game.PrintChat("Harass: Has buff, E ready, UseE");
-                    CastE(target);
-                }
-            }
-            else if (useE && E.IsReady())
-            {
-                CastE(target);
-            }
+            //if (chilledE)
+            //{
+            //    if (target.HasBuff("Chilled", false, true) && useE && E.IsReady())
+            //    {
+            //        CastE(target);
+            //    }
+            //}
+            //else if (useE && E.IsReady())
+            //{
+            //    CastE(target);
+            //}
         }
 
         private static void CastQ(Obj_AI_Base unit)

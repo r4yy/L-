@@ -234,7 +234,6 @@ namespace Anivia
         private static void DetonateQ()
         {
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
-            Game.PrintChat("Enemy: " + enemy);
                 foreach (var enemy in enemies)
                 {
                     Game.PrintChat("Enemy: " + enemy);

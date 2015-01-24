@@ -165,17 +165,22 @@ namespace Anivia
         private static void Harass()
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            if (target == null || target.IsInvulnerable) return;
 
-            if (target == null || (Player.Mana / Player.MaxMana) * 100 < MyMenu.Item("ManaHarass").GetValue<int>())
-                return;
+            var useQ = MyMenu.Item("UseQHarass").GetValue<bool>();
+            //var useW = MyMenu.Item("UseWCombo").GetValue<bool>();
+            var useE = MyMenu.Item("UseEHarass").GetValue<bool>();
 
-            var useQ = MyMenu.Item("UseQHarass").GetValue<bool>() && Q.IsReady();
-            var useE = MyMenu.Item("UseEHarass").GetValue<bool>() && E.IsReady();
-
-            if (useQ)
+            if (useQ && Q.IsReady())
+            {
                 CastQ(target);
-            if (useE)
+            }
+
+            if (useE && E.IsReady())
+            {
                 CastE(target);
+            }
+
         }
 
         private static void CastQ(Obj_AI_Hero unit)

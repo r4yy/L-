@@ -23,6 +23,7 @@ namespace Anivia
         public static Orbwalking.Orbwalker Orbwalker;
         public static SpellSlot IgniteSlot;
         public static GameObject QGameObject, RGameObject;
+        public static bool SelfUlt;
         public static Menu MyMenu;
 
         public static void Main(string[] args)
@@ -108,9 +109,22 @@ namespace Anivia
             Drawing.OnDraw += Drawing_OnDraw;
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             //Interrupter.OnPossibleToInterrupt += Interrupter_OnPossibleToInterrupt;
             //AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Game.PrintChat("Anivia by r4yy - Successfully loaded!");
+        }
+
+        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsMe && args.SData.Name.Contains("cryo_storm"))
+            {
+                SelfUlt = true;
+            }
+            else
+            {
+                SelfUlt = false;
+            }
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
@@ -181,6 +195,9 @@ namespace Anivia
         }
         private static void Harass()
         {
+            if (Player.Mana / Player.MaxMana * 100 < MyMenu.Item("ManaHarass").GetValue<float>())
+                return;
+
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             if (target == null || target.IsInvulnerable) return;
 
@@ -200,7 +217,7 @@ namespace Anivia
 
         }
 
-        private static void CastQ(Obj_AI_Hero unit)
+        private static void CastQ(Obj_AI_Base unit)
         {
             if (!unit.IsValidTarget(Q.Range) || QGameObject != null)
             {
@@ -215,7 +232,7 @@ namespace Anivia
                 E.CastOnUnit(unit, true);
             }
         }
-        private static void CastR(Obj_AI_Hero unit)
+        private static void CastR(Obj_AI_Base unit)
         {
             if (unit.IsValidTarget(R.Range) && RGameObject == null)
             {
@@ -234,6 +251,8 @@ namespace Anivia
 
         private static void StopR()
         {
+            if (SelfUlt)
+                return;
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
 
             foreach (var enemy in enemies.Where(enemy => RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) > 400))

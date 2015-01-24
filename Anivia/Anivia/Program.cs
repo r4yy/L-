@@ -120,11 +120,10 @@ namespace Anivia
 
             DetonateQ();
             StopR();
-            if (MyMenu.Item("AutoIgnite").GetValue<bool>())
-            {
-                CastIgnite();
-            }
 
+            if (MyMenu.Item("AutoIgnite").GetValue<bool>())
+                CastIgnite();
+            
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -207,7 +206,6 @@ namespace Anivia
             {
                 return;
             }
-            Game.PrintChat("Should cast Q now");
             Q.CastIfHitchanceEquals(unit, HitChance.High, true);
         }
         private static void CastE(Obj_AI_Base unit)
@@ -238,7 +236,7 @@ namespace Anivia
         {
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
 
-            foreach (var enemy in enemies.Where(enemy => RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) < 400))
+            foreach (var enemy in enemies.Where(enemy => RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) > 400))
                 R.Cast();
         }
 

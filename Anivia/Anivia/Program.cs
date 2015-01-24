@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using LeagueSharp;
@@ -235,14 +236,15 @@ namespace Anivia
         private static void DetonateQ()
         {
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
-                foreach (var enemy in enemies)
+            Debug.Print("Enemies: " + enemies);
+
+            foreach (var enemy in enemies)
+            {
+                if (QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 150)
                 {
-                    Debug.Print("Enemy: " + enemy);
-                    if (QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 150)
-                    {
-                        Q.Cast();
-                    }
+                    Q.Cast();
                 }
+            }
         }
         private static void StopR()
         {

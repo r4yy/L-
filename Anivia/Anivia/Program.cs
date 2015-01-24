@@ -234,18 +234,27 @@ namespace Anivia
         private static void DetonateQ()
         {
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
-            foreach (var enemy in enemies.Where(enemy => QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 150)) {
-                Game.PrintChat("Enemy: " + enemy);
-                Q.Cast();
-            }
+
+                foreach (var enemy in enemies)
+                {
+                    if (QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 150)
+                    {
+                        Q.Cast();
+                    }
+                }
         }
         private static void StopR()
         {
             if (SelfUlt) return;
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
 
-            foreach (var enemy in enemies.Where(enemy => RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) > 400))
-                R.Cast();
+            foreach (var enemy in enemies)
+            {
+                if (RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) > 400)
+                {
+                    R.Cast();
+                }
+            }
         }
 
         private static void CastIgnite()

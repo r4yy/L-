@@ -234,7 +234,6 @@ namespace Anivia
         private static void DetonateQ()
         {
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
-            Game.PrintChat("Enemies: " + enemies);
             foreach (var enemy in enemies.Where(enemy => QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 150)) {
                 Game.PrintChat("Enemy: " + enemy);
                 Q.Cast();

@@ -168,6 +168,7 @@ namespace Anivia
                 {
                     Game.PrintChat("Should cast E now");
                     CastE(target);
+                    Game.PrintChat("Casted E");
                 }
             }
             else if (useE && E.IsReady())

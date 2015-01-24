@@ -11,6 +11,8 @@ namespace Anivia
 {
     class Program
     {
+        // DETONATE NOT WORKING
+        // SELFULT AS WELL
         public static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public static Spell Q, W, E, R;
         public static Orbwalking.Orbwalker Orbwalker;
@@ -237,11 +239,11 @@ namespace Anivia
         {
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enem => enem.IsValidTarget(Q.Range));
 
-            foreach (Obj_AI_Hero enemy in enemies)
+            foreach (var enemy in enemies)
             {
                 if (QGameObject != null && enemy.Distance(QGameObject.Position) < 175)
                 {
-                    Q.Cast(QGameObject.Position);
+                    Q.Cast();
                 }
             }
         }
@@ -250,7 +252,7 @@ namespace Anivia
             //if (SelfUlt) return;
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enem => enem.IsValidTarget());
 
-            foreach (Obj_AI_Hero enemy in enemies)
+            foreach (var enemy in enemies)
             {
                 if (RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) > 400)
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using LeagueSharp;
@@ -236,7 +237,7 @@ namespace Anivia
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
                 foreach (var enemy in enemies)
                 {
-                    Game.PrintChat("Enemy: " + enemy);
+                    Debug.Print("Enemy: " + enemy);
                     if (QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 150)
                     {
                         Q.Cast();

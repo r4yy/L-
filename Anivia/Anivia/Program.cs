@@ -164,9 +164,9 @@ namespace Anivia
             if (useEChilled)
             {
                 Game.PrintChat("Combo: Only use E if chilled");
-                if (target.HasBuff("Chilled", false, true) && useE && E.IsReady())
+                if (target.HasBuff("Chilled") && useE && E.IsReady())
                 {
-                    Game.PrintChat("Harass: Has buff, E ready, UseE");
+                    Game.PrintChat("Should cast E now");
                     CastE(target);
                 }
             }

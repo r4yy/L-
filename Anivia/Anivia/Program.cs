@@ -195,7 +195,7 @@ namespace Anivia
         }
         private static void Harass()
         {
-            if (Player.Mana / Player.MaxMana * 100 < MyMenu.Item("ManaHarass").GetValue<float>())
+            if ((Player.Mana / Player.MaxMana) * 100 < MyMenu.Item("ManaHarass").GetValue<float>())
                 return;
 
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);

@@ -9,16 +9,7 @@ namespace Anivia
 {
     class Program
     {
-        public static Obj_AI_Hero Player
-        {
-            get { return ObjectManager.Player; }
-        }
-
-        //public static Obj_AI_Hero Target
-        //{
-        //    get { return ObjectManager.Player; }
-        //}
-
+        public static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
         public static Spell Q, W, E, R;
         public static Orbwalking.Orbwalker Orbwalker;
         public static SpellSlot IgniteSlot;
@@ -155,20 +146,7 @@ namespace Anivia
             }
         }
 
-        private static void CastIgnite()
-        {
-            if (IgniteSlot == SpellSlot.Unknown && Player.Spellbook.CanUseSpell(IgniteSlot) != SpellState.Ready)
-                return;
-
-            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
-
-            foreach (var enemy in enemies.Where(enemy => enemy.Health < 55 + Player.Level * 20)) 
-            {
-                Player.Spellbook.CastSpell(IgniteSlot, enemy);
-            }
-        }
-
-        public static void Combo()
+        private static void Combo()
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             if (target == null || target.IsInvulnerable) return;
@@ -219,11 +197,11 @@ namespace Anivia
 
         private static void CastQ(Obj_AI_Base unit)
         {
-            if (!unit.IsValidTarget(Q.Range) || QGameObject != null)
+            if (unit.IsValidTarget(Q.Range) && QGameObject == null)
             {
-                return;
+                Q.CastIfHitchanceEquals(unit, HitChance.High, true);
             }
-            Q.CastIfHitchanceEquals(unit, HitChance.High, true);
+            
         }
         private static void CastE(Obj_AI_Base unit)
         {
@@ -248,17 +226,27 @@ namespace Anivia
                 Q.Cast();
             }
         }
-
         private static void StopR()
         {
-            if (SelfUlt)
-                return;
+            if (SelfUlt) return;
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
 
             foreach (var enemy in enemies.Where(enemy => RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) > 400))
                 R.Cast();
         }
 
+        private static void CastIgnite()
+        {
+            if (IgniteSlot == SpellSlot.Unknown && Player.Spellbook.CanUseSpell(IgniteSlot) != SpellState.Ready)
+                return;
+
+            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
+
+            foreach (var enemy in enemies.Where(enemy => enemy.Health < 55 + Player.Level * 20))
+            {
+                Player.Spellbook.CastSpell(IgniteSlot, enemy);
+            }
+        }
 
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
@@ -287,8 +275,7 @@ namespace Anivia
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-            if (Player.IsDead)
-                return;
+            if (Player.IsDead) return;
 
             var drawQ = MyMenu.Item("QRange").GetValue<Circle>();
             var drawE = MyMenu.Item("ERange").GetValue<Circle>();

@@ -241,7 +241,7 @@ namespace Anivia
             {
                 if (QGameObject != null && enemy.Distance(QGameObject.Position) < 175)
                 {
-                    Q.Cast();
+                    Q.Cast(QGameObject.Position);
                 }
             }
         }

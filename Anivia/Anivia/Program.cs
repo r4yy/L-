@@ -164,7 +164,7 @@ namespace Anivia
 
             if (chilledE)
             {
-                if (target.HasBuff("Chilled") && useE && E.IsReady())
+                if (target.HasBuff("Chilled", false, true) && useE && E.IsReady())
                 {
                     CastE(target);
                 }
@@ -198,7 +198,7 @@ namespace Anivia
 
             if (chilledE)
             {
-                if (target.HasBuff("Chilled") && useE && E.IsReady())
+                if (target.HasBuff("Chilled", false, true) && useE && E.IsReady())
                 {
                     CastE(target);
                 }

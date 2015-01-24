@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using LeagueSharp;
 using LeagueSharp.Common;
 using Color = System.Drawing.Color;
@@ -34,7 +35,7 @@ namespace Anivia
             if (Player.ChampionName != "Anivia")
                 return;
 
-            IgniteSlot = Player.GetSpellSlot("summonordot");
+            IgniteSlot = Player.GetSpellSlot("SummonerDot");
 
             #region SpellInfos
 
@@ -68,7 +69,6 @@ namespace Anivia
             //MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
             MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
             MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
-            MyMenu.SubMenu("Combo").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
 
             MyMenu.AddSubMenu(new Menu("Harass", "Harass"));
             MyMenu.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "Use Q").SetValue(true));
@@ -89,6 +89,7 @@ namespace Anivia
             MyMenu.AddSubMenu(new Menu("Misc", "Misc"));
             MyMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "Use PacketCast").SetValue(true));
             MyMenu.SubMenu("Misc").AddItem(new MenuItem("AutoE", "Auto use E when enemy is chilled").SetValue(true));
+            MyMenu.SubMenu("Misc").AddItem(new MenuItem("AutoIgnite", "Auto Ignite if killable").SetValue(true));
 
             MyMenu.AddSubMenu(new Menu("Drawings", "Drawings"));
             MyMenu.SubMenu("Drawings")
@@ -119,6 +120,10 @@ namespace Anivia
 
             DetonateQ();
             StopR();
+            if (MyMenu.Item("AutoIgnite").GetValue<bool>())
+            {
+                CastIgnite();
+            }
 
             switch (Orbwalker.ActiveMode)
             {
@@ -134,6 +139,19 @@ namespace Anivia
                     //    break;
                 case Orbwalking.OrbwalkingMode.None:
                     break;
+            }
+        }
+
+        private static void CastIgnite()
+        {
+            if (IgniteSlot == SpellSlot.Unknown && Player.Spellbook.CanUseSpell(IgniteSlot) != SpellState.Ready)
+                return;
+
+            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
+
+            foreach (var enemy in enemies.Where(enemy => enemy.Health < 55 + Player.Level * 20)) 
+            {
+                Player.Spellbook.CastSpell(IgniteSlot, enemy);
             }
         }
 
@@ -185,11 +203,12 @@ namespace Anivia
 
         private static void CastQ(Obj_AI_Hero unit)
         {
-            if (unit.IsValidTarget(Q.Range) && QGameObject == null) 
+            if (!unit.IsValidTarget(Q.Range) || QGameObject != null)
             {
-                Game.PrintChat("Should cast Q now");
-                Q.CastIfHitchanceEquals(unit, HitChance.High, true);
+                return;
             }
+            Game.PrintChat("Should cast Q now");
+            Q.CastIfHitchanceEquals(unit, HitChance.High, true);
         }
         private static void CastE(Obj_AI_Base unit)
         {

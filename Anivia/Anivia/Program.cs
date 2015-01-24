@@ -247,7 +247,7 @@ namespace Anivia
         }
         private static void StopR()
         {
-            if (SelfUlt) return;
+            //if (SelfUlt) return;
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enem => enem.IsValidTarget());
 
             foreach (Obj_AI_Hero enemy in enemies)

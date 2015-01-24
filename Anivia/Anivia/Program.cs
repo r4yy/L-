@@ -163,12 +163,9 @@ namespace Anivia
 
             if (useEChilled)
             {
-                Game.PrintChat("Combo: Only use E if chilled");
                 if (target.HasBuff("Chilled") && useE && E.IsReady())
                 {
-                    Game.PrintChat("Should cast E now");
                     CastE(target);
-                    Game.PrintChat("Casted E");
                 }
             }
             else if (useE && E.IsReady())
@@ -191,24 +188,24 @@ namespace Anivia
 
             var useQ = MyMenu.Item("UseQHarass").GetValue<bool>();
             var useE = MyMenu.Item("UseEHarass").GetValue<bool>();
-            var chilledE = MyMenu.Item("ChilledE").GetValue<bool>();
+            var useEChilled = MyMenu.Item("UseEChilled").GetValue<bool>();
 
             if (useQ && Q.IsReady())
             {
                 CastQ(target);
             }
 
-            //if (chilledE)
-            //{
-            //    if (target.HasBuff("Chilled", false, true) && useE && E.IsReady())
-            //    {
-            //        CastE(target);
-            //    }
-            //}
-            //else if (useE && E.IsReady())
-            //{
-            //    CastE(target);
-            //}
+            if (useEChilled)
+            {
+                if (target.HasBuff("Chilled") && useE && E.IsReady())
+                {
+                    CastE(target);
+                }
+            }
+            else if (useE && E.IsReady())
+            {
+                CastE(target);
+            }
         }
 
         private static void CastQ(Obj_AI_Base unit)
@@ -237,8 +234,9 @@ namespace Anivia
         private static void DetonateQ()
         {
             var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
-
+            Game.PrintChat("Enemies: " + enemies);
             foreach (var enemy in enemies.Where(enemy => QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 150)) {
+                Game.PrintChat("Enemy: " + enemy);
                 Q.Cast();
             }
         }

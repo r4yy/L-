@@ -235,11 +235,11 @@ namespace Anivia
 
         private static void DetonateQ()
         {
-            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
+            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enem => enem.IsValidTarget());
 
-            foreach (var enemy in enemies)
+            foreach (Obj_AI_Hero enemy in enemies)
             {
-                if (QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 200)
+                if (QGameObject != null && QGameObject.Position.Distance(enemy.ServerPosition) < 175)
                 {
                     Q.Cast();
                 }
@@ -248,9 +248,9 @@ namespace Anivia
         private static void StopR()
         {
             if (SelfUlt) return;
-            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enemy => enemy.IsValidTarget());
+            var enemies = ObjectManager.Get<Obj_AI_Hero>().FindAll(enem => enem.IsValidTarget());
 
-            foreach (var enemy in enemies)
+            foreach (Obj_AI_Hero enemy in enemies)
             {
                 if (RGameObject != null && RGameObject.Position.Distance(enemy.ServerPosition) > 400)
                 {

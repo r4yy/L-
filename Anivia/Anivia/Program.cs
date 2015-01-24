@@ -80,7 +80,7 @@ namespace Anivia
 
             MyMenu.AddSubMenu(new Menu("Misc", "Misc"));
             MyMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "Use PacketCast").SetValue(true));
-            MyMenu.SubMenu("Misc").AddItem(new MenuItem("AutoE", "Auto use E when enemy is chilled").SetValue(true));
+            MyMenu.SubMenu("Misc").AddItem(new MenuItem("ChilledE", "Use E only if enemy is chilled").SetValue(true));
             MyMenu.SubMenu("Misc").AddItem(new MenuItem("AutoIgnite", "Auto Ignite if killable").SetValue(true));
 
             MyMenu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -155,13 +155,21 @@ namespace Anivia
             //var useW = MyMenu.Item("UseWCombo").GetValue<bool>();
             var useE = MyMenu.Item("UseECombo").GetValue<bool>();
             var useR = MyMenu.Item("UseRCombo").GetValue<bool>();
+            var chilledE = MyMenu.Item("ChilledE").GetValue<bool>();
 
             if (useR && R.IsReady())
             {
                 CastR(target);
             }
 
-            if (useE && E.IsReady())
+            if (chilledE)
+            {
+                if (target.HasBuff("chilled") && useE && E.IsReady())
+                {
+                    CastE(target);
+                }
+            }
+            else if (useE && E.IsReady())
             {
                 CastE(target);
             }
@@ -180,26 +188,32 @@ namespace Anivia
             if (target == null || target.IsInvulnerable) return;
 
             var useQ = MyMenu.Item("UseQHarass").GetValue<bool>();
-            //var useW = MyMenu.Item("UseWCombo").GetValue<bool>();
             var useE = MyMenu.Item("UseEHarass").GetValue<bool>();
+            var chilledE = MyMenu.Item("ChilledE").GetValue<bool>();
 
             if (useQ && Q.IsReady())
             {
                 CastQ(target);
             }
 
-            if (useE && E.IsReady())
+            if (chilledE)
+            {
+                if (target.HasBuff("chilled") && useE && E.IsReady())
+                {
+                    CastE(target);
+                }
+            }
+            else if (useE && E.IsReady())
             {
                 CastE(target);
             }
-
         }
 
         private static void CastQ(Obj_AI_Base unit)
         {
             if (unit.IsValidTarget(Q.Range) && QGameObject == null)
             {
-                Q.CastIfHitchanceEquals(unit, HitChance.High, true);
+                Q.CastIfHitchanceEquals(unit, HitChance.High);
             }
             
         }
@@ -207,14 +221,14 @@ namespace Anivia
         {
             if (unit.IsValidTarget(E.Range))
             {
-                E.CastOnUnit(unit, true);
+                E.CastOnUnit(unit);
             }
         }
         private static void CastR(Obj_AI_Base unit)
         {
             if (unit.IsValidTarget(R.Range) && RGameObject == null)
             {
-                R.Cast(unit, true, true);
+                R.Cast(unit,false,true);
             }
         }
 
